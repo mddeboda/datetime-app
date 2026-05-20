@@ -1,39 +1,78 @@
-﻿# datetime-app
-A simple Python app that shows a Tkinter popup with the current username and local date/time.
+# datetime-app
+A simple Flask web app that greets the current user, shows today's date, and displays the weather.
 
-## Python App
+## Python Flask App
 
-The Python app uses `tkinter` to display a message box containing:
+The app shows a web page with this message:
 
-- the detected username (using `getpass.getuser()` or environment values)
-- the current local datetime
+> Hello User. Today is Wednesday, May 20, 2026 and the weather in New York is Clear, +20C.
 
-If no username can be detected, it falls back to `User`.
+The exact username, date, location, and weather will change based on your computer and request.
+The app tries to detect your primary location automatically from your public IPv4 address.
 
-Run it with:
+## Setup
+
+Install the dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Run the web server:
 
 ```bash
 python app.py
 ```
 
-Example message shown by the app:
+Then open:
 
-> Hello Maria, it is currently 2026-05-16 14:50:30 🔥 👍 😄
+```text
+http://127.0.0.1:5000
+```
 
-## Code behavior
+## Weather Location
+
+By default, the app looks up your public IPv4 address, uses that to estimate your city or region, and shows weather for that location.
+
+If the IP lookup fails, the app falls back to `New York`.
+
+To choose a different city in the browser, add a `location` query parameter:
+
+```text
+http://127.0.0.1:5000?location=Boston
+```
+
+You can also set a default location with an environment variable:
+
+```powershell
+$env:WEATHER_LOCATION = "Boston"
+python app.py
+```
+
+The priority order is:
+
+1. `location` query parameter
+2. `WEATHER_LOCATION` environment variable
+3. public IPv4 location lookup
+4. `New York` fallback
+
+## Code Behavior
 
 `app.py` does the following:
 
-1. imports `datetime`, `getpass`, `os`, and `tkinter`
+1. creates a Flask web server
 2. detects the username from the system or environment
-3. formats the current local datetime as `YYYY-MM-DD HH:MM:SS`
-4. builds a friendly greeting string with emoji
-5. displays the string in a Tkinter information popup
+3. formats today's local date
+4. detects the public IPv4 address with `api.ipify.org`
+5. estimates the primary location with `ipapi.co`
+6. requests a simple weather summary from `wttr.in`
+7. renders a web page with the greeting, date, location, and weather
 
 ## Requirements
 
 - Python 3
-- `tkinter` available in your Python installation
+- Flask
+- requests
 
 ## Changelog
 
